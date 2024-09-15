@@ -1,0 +1,53 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block header %}
+<div id="header" style="position: relative;">
+    <div id="branding">
+        {% block branding %}<h1>Inventory App</h1>{% endblock %}
+        {% if user.is_authenticated %}
+        <div class="alert-icon" style="background-color: {% if unseen_alerts_count > 0 %}red{% else %}green{% endif %}; padding: 10px; z-index: 1000;">
+            <a href="{% url 'admin:inventory_app_alert_changelist' %}">
+                <i class="fas fa-bell"></i> {{ unseen_alerts_count }} Alerts
+            </a>
+        </div>
+        
+        <div class="report-button" style="background-color: #4CAF50; padding: 10px; margin-left: 15px;">
+            <a href="{% url 'inventory_report' %}">
+                <i class="fas fa-chart-bar"></i> Inventory Report
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% block usertools %}
+    {% if has_permission %}
+    <div id="user-tools">
+        {% block welcome-msg %}
+            {% translate 'Welcome,' %}
+            <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+        {% endblock %}
+        {% block userlinks %}
+            {% if site_url %}
+                <a href="{{ site_url }}">{% translate 'View site' %}</a> /
+            {% endif %}
+            {% if user.is_active and user.is_staff %}
+                {% url 'django-admindocs-docroot' as docsroot %}
+                {% if docsroot %}
+                    <a href="{{ docsroot }}">{% translate 'Documentation' %}</a> /
+                {% endif %}
+            {% endif %}
+            {% if user.has_usable_password %}
+            <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a> /
+            {% endif %}
+            <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+                {% csrf_token %}
+                <button type="submit">{% translate 'Log out' %}</button>
+            </form>
+            {% include "admin/color_theme_toggle.html" %}
+        {% endblock %}
+    </div>
+    {% endif %}
+    {% endblock %}
+    {% block nav-global %}{% endblock %}
+</div>
+{% endblock %}

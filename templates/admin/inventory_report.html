@@ -1,0 +1,68 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h2>Inventory Report</h2>
+
+<!-- Total Inventory Value -->
+<p><strong>Total Inventory Value:</strong> <span style="color: green; font-size: 18px;">{{ total_inventory_value }}</span></p>
+
+<!-- Filter Form -->
+<form method="get" style="margin-bottom: 20px;">
+    <div style="margin-bottom: 10px;">
+        <!-- Filters aligned side-by-side -->
+        <div style="display: inline-block; margin-right: 10px;">
+            <label for="category">Category:</label>
+            <select name="category" id="category">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="display: inline-block; margin-right: 10px;">
+            <label for="supplier">Supplier:</label>
+            <select name="supplier" id="supplier">
+                <option value="">All Suppliers</option>
+                {% for sup in suppliers %}
+                    <option value="{{ sup.id }}" {% if request.GET.supplier == sup.id|stringformat:"s" %}selected{% endif %}>{{ sup.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="display: inline-block; margin-right: 10px;">
+            <label for="stock_level">Stock Level Greater Than:</label>
+            <input type="number" name="stock_level" id="stock_level" value="{{ request.GET.stock_level }}" placeholder="Enter Stock Level">
+            <button type="submit" style="margin-right: 10px;">Filter</button>
+
+        </div>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <a href="?category={{ request.GET.category }}&supplier={{ request.GET.supplier }}&stock_level={{ request.GET.stock_level }}&order={% if order == 'asc' %}desc{% else %}asc{% endif %}" class="btn">
+            Sort by Stock Level 
+            {% if order == 'asc' %}
+                <span>&#9650; Ascending</span> 
+            {% else %}
+                <span>&#9660; Descending</span> 
+            {% endif %}
+        </a>
+    </div>
+</form>
+
+<h3 style="margin-bottom: 15px;">Products</h3>
+<table>
+    <tr>
+        <th style="padding-right: 20px;">Product Name</th>
+        <th style="padding-right: 20px;">Stock Quantity</th>
+        <th style="padding-right: 20px;">Price</th>
+    </tr>
+    {% for product in filtered_products %}
+    <tr>
+        <td>{{ product.name }}</td>
+        <td>{{ product.quantity }}</td>
+        <td>{{ product.price }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
